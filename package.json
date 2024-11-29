@@ -1,0 +1,26 @@
+{
+	"name": "north-korea-missile-alert",
+	"version": "1.0.0",
+	"description": "Scrape news sites and alert to slack if missile has launched",
+	"main": "index.js",
+	"scripts": {
+	  "test": "node-lambda run"
+	},
+	"keywords": [
+	  "North Korea",
+	  "Missile Alert",
+	  "Slack"
+	],
+	"author": "Hiroki Urabe",
+	"license": "WTFPL",
+	"repository": {
+	  "type": "git",
+	  "url": "https://github.com/urabexon/North-Korea_MissileAlert"
+	},
+	"dependencies": {
+	  "async": "^2.3.0"
+	},
+	"devDependencies": {
+	  "node-lambda": "^0.8.15"
+	}
+  }

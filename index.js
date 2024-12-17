@@ -16,50 +16,58 @@ var HEADLINE_LENGTH = 20;
 
 var WEBHOOK_URL = process.env['WEBHOOK_URL'];
 
-exports.handler = function(event, context, callback) {
-  request(YAHOO_URL, function(err, res, body) {
-    if (err) {
-      callback(err);
-    }
-    if (res.statusCode != 200) {
-      callback(res);
-    }
+const axios = require('axios');
 
-    if (detectMissile(body)) {
-      var headline = extractHeadline(body);
+exports.handler = async (event, context) => {
+  try {
+    // ミサイル情報検出
+    const { headline, url } = await detectMissileByNHK();
 
-      var payload =
-      {
-          text: "@here",
-          attachments: [
-            {
-              color: 'danger',
-              text: headline,
-              pretext: YAHOO_URL
-            }
-          ]
-      };
-
-      request({
-        url: WEBHOOK_URL,
-        method: "POST",
-        json: payload
-      }, function(err, res, body) {
-        if (err) {
-          callback(err);
+    // SlackのWebhookに送信する
+    const payload = {
+      text: "@here",
+      attachments: [
+        {
+          color: 'danger',
+          text: headline,
+          pretext: url
         }
-        if (res.statusCode != 200) {
-          callback(res);
-        }
+      ]
+    };
 
-        callback(null, headline);
-      });
+    const response = await axios.post(process.env.WEBHOOK_URL, payload);
+
+    // Slack APIのレスポンス
+    if (response.status === 200) {
+      console.log('Notification sent successfully');
+      return { status: 'success', message: headline };
+    } else {
+      console.error('Failed to send notification', response.statusText);
+      throw new Error(`Slack API error: ${response.statusText}`);
     }
-    else {
-      callback(null, "no missile");
-    }
+
+  } catch (error) {
+    console.error('Error occurred:', error.message);
+    throw error;
+  }
+};
+
+// 仮のNHKミサイル検出関数 (非同期でデータを返す)
+async function detectMissileByNHK() {
+  return new Promise((resolve, reject) => {
+    // 仮のデータ取得処理
+    const headline = "Missile detected: Breaking news from NHK";
+    const url = "https://www.nhk.or.jp/";
+    resolve({ headline, url });
   });
 }
+
+
+
+
+
+
+///////////////////
 
 function detectMissile(body) {
   return DANGEROUS_WORDS

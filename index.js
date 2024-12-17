@@ -17,6 +17,7 @@ var HEADLINE_LENGTH = 20;
 var WEBHOOK_URL = process.env['WEBHOOK_URL'];
 
 const axios = require('axios');
+const DANGEROUS_WORDS = ['ミサイル', '発射', '着弾'];
 
 exports.handler = async (event, context) => {
   try {
@@ -117,40 +118,19 @@ async function detectMissileByYahoo(callback, lambdaCallback) {
 }
 
 function detectMissile(body) {
-  const DANGEROUS_WORDS = ['ミサイル', '発射', '着弾'];
   return DANGEROUS_WORDS.some(word => body.includes(word));
 }
 
-
-
 // 仮のヘッドライン抽出関数
-function extractHeadline(body) {
-  // 実際のHTML/JSONの構造に合わせて適切に実装する
-  const match = body.match(/<title>(.*?)<\/title>/);
-  return match ? match[1] : "No headline found";
-}
+function extractHeadline(body, words) {
+  const indices = words
+    .map(word => body.indexOf(word))
+    .filter(index => index !== -1);
 
+  if (indices.length === 0) {
+    return "No headline found";
+  }
 
-
-
-
-///////////////////
-
-function detectMissile(body) {
-  return DANGEROUS_WORDS
-    .map(function(word) {
-      return body.search(word);
-    })
-    .reduce(function(acc, index) {
-      return acc && (index > -1);
-    }, true);
-}
-
-function extractHeadline(body) {
-  var indices = DANGEROUS_WORDS
-    .map(function(word) {
-      return body.search(word);
-    });
-  var start = Math.min.apply(Math, indices);
+  const start = Math.min(...indices);
   return body.substring(start, start + HEADLINE_LENGTH);
 }

@@ -1,11 +1,16 @@
 var request = require('request');
 
 var YAHOO_URL = 'https://www.yahoo.co.jp/';
+var NHK_URL = 'http://www3.nhk.or.jp/news/json16/new_001.json';
+var NHK_HEAD_URL = 'http://www3.nhk.or.jp/news/json16/tvnews.json';
 
-var DANGEROUS_WORDS = [
-  '北朝鮮',
-  'ミサイル',
-];
+var DANGEROUS_WORDS = process.env['DANGEROUS_WORDS'] ?
+		process.env['DANGEROUS_WORDS'].split(',') :
+    ['北朝鮮', 'ミサイル'];
+
+var UPTODATE_DURATION_MIN = process.env['UPTODATE_DURATION_MIN'] ?
+    parseInt(process.env['UPTODATE_DURATION_MIN']) :
+    3;
 
 var HEADLINE_LENGTH = 20;
 

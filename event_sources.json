@@ -1,8 +1,8 @@
 [
 	{
-		"EventSourceArn": "your event source arn",
-		"StartingPosition": "LATEST",
-		"BatchSize": 100,
-		"Enabled": true
+	  "EventSourceArn": "arn:aws:dynamodb:us-east-1:123456789012:table/my-table/stream/2024-05-01T00:00:00.000",
+	  "StartingPosition": "LATEST",
+	  "BatchSize": 100,
+	  "Enabled": true
 	}
-]
+  ]
